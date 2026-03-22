@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Buffering Simulation</title>
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            margin: 0;
+        }
+
+        .container {
+            margin-top: 40px;
+        }
+
+        h1 { font-size: 36px; }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            width: 60%;
+            margin: auto;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        input {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .single { background: #ff6b6b; }
+        .double { background: #1dd1a1; }
+
+        button:hover {
+            transform: scale(1.1);
+        }
+
+        pre {
+            background: black;
+            color: #00ff9d;
+            padding: 15px;
+            width: 70%;
+            margin: 20px auto;
+            height: 300px;
+            overflow-y: auto;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        #timeResult {
+            font-size: 20px;
+            color: #ffd32a;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+        <h1>⚡ Buffering Simulation</h1>
+        <h2>Sujal P Wandhare USN - CS24241</h2>
+        <h3>Aniruddha N. Shastrakar USN - CS24193</h3>
+
+        <br>
+
+        <label>Enter Data Size:</label><br>
+        <input type="number" id="dataSize" value="10">
+
+        <br><br>
+
+        <button class="single" onclick="singleBuffer()">Single Buffering</button>
+        <button class="double" onclick="doubleBuffer()">Double Buffering</button>
+    </div>
+
+    <h2>Output:</h2>
+    <pre id="output"></pre>
+
+    <h2 id="timeResult"></h2>
+
+</div>
+
+<script>
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function singleBuffer() {
+    let size = parseInt(document.getElementById("dataSize").value);
+    let out = document.getElementById("output");
+    let timeDisplay = document.getElementById("timeResult");
+
+    if (size <= 0) {
+        alert("Enter valid data size");
+        return;
+    }
+
+    let start = performance.now();
+    out.innerHTML = "🔴 Single Buffering Simulation\n\n";
+
+    for (let i = 1; i <= size; i++) {
+        out.innerHTML += "📥 I/O loading data " + i + "\n";
+        await sleep(500);
+
+        out.innerHTML += "⚙ CPU processing data " + i + "\n";
+        await sleep(500);
+
+        out.scrollTop = out.scrollHeight;
+    }
+
+    let end = performance.now();
+    let totalTime = ((end - start) / 1000).toFixed(2);
+
+    out.innerHTML += "\n❌ CPU waits for I/O each time!";
+    timeDisplay.innerHTML = "⏱ Total Time (Single Buffering): " + totalTime + " sec";
+}
+
+async function doubleBuffer() {
+    let size = parseInt(document.getElementById("dataSize").value);
+    let out = document.getElementById("output");
+    let timeDisplay = document.getElementById("timeResult");
+
+    if (size <= 0) {
+        alert("Enter valid data size");
+        return;
+    }
+
+    let start = performance.now();
+    out.innerHTML = "🟢 Double Buffering Simulation (Correct)\n\n";
+
+
+    out.innerHTML += "📥 I/O loading data 1\n";
+    await sleep(500);
+
+    for (let i = 1; i <= size; i++) {
+
+
+        out.innerHTML += "⚙ CPU processing data " + i + "\n";
+
+
+        if (i < size) {
+            out.innerHTML += "📥 I/O loading data " + (i + 1) + "\n";
+        }
+
+        await sleep(500);
+        out.scrollTop = out.scrollHeight;
+    }
+
+    let end = performance.now();
+    let totalTime = ((end - start) / 1000).toFixed(2);
+
+    out.innerHTML += "\n✅ CPU and I/O overlap using double buffering!";
+    timeDisplay.innerHTML = "⏱ Total Time (Double Buffering): " + totalTime + " sec";
+}
+</script>
+
+</body>
+</html>
